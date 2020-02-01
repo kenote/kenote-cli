@@ -6,6 +6,11 @@ module.exports = {
     config.entry = {
       index: './src/index.ts'
     }
+    config.plugins = [
+      new webpack.DefinePlugin({
+        'process.env.CLI_DIR': `"${__dirname}"`
+      })
+    ]
 
     config.resolve = {
       extensions: ['.ts', '.js', '.json'],
