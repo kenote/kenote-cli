@@ -27,7 +27,8 @@
   },
   "scripts": {
     "dev": "backpack dev",
-    "build": "backpack build"
+    "build": "backpack build",
+    "postinstall": "npm run build"
   },
   "bin": {
     "kenote": "bin/index.js"
