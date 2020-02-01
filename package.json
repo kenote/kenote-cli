@@ -1,0 +1,35 @@
+{
+  "name": "kenote-cli",
+  "version": "1.0.0",
+  "description": "...",
+  "main": "build/index.js",
+  "repository": "https://github.com/kenote/kenote-cli.git",
+  "author": "thondery <thondery@163.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/inquirer": "^6.5.0",
+    "@types/js-yaml": "^3.12.2",
+    "@types/lodash": "^4.14.149",
+    "@types/node": "^13.5.0",
+    "awesome-typescript-loader": "^5.2.1",
+    "backpack-core": "^0.8.4",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "tslint": "^6.0.0",
+    "typescript": "^3.7.5"
+  },
+  "dependencies": {
+    "commander": "^4.1.0",
+    "inquirer": "^7.0.4",
+    "js-yaml": "^3.13.1",
+    "runscript": "^1.4.0",
+    "ts-node": "^8.6.2",
+    "ts-optchain": "^0.1.8"
+  },
+  "scripts": {
+    "dev": "backpack dev",
+    "build": "backpack build"
+  },
+  "bin": {
+    "kenote": "bin/index.js"
+  }
+}
