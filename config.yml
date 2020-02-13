@@ -1,0 +1,14 @@
+
+
+# 例子
+examples:
+  - name         : Component of VUE togethe
+    repository   : github:kenote/vue-component-example
+    value        : vue-component-example
+    results      :
+      - name       : To get started
+        content    :
+          - npm run serve
+      - name       : To build & start for production
+        content    :
+          - npm run lib

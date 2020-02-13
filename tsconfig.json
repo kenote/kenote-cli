@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
     "target": "es5",
     "lib": [
       "dom",
@@ -20,15 +22,6 @@
     "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": false,
     "downlevelIteration": true,
-    "baseUrl": ".",
-    "paths": {
-      "~/*": [
-        "./src/*"
-      ],
-      "@/*": [
-        "./*"
-      ]
-    },
     "plugins": [
       {
         "transform": "ts-optchain/transform"

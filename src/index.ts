@@ -1,9 +1,10 @@
+#!/usr/bin/env node
 import * as path from 'path'
 import * as program from 'commander'
-import * as pkg from '@/package.json'
 import { isEmpty } from 'lodash'
 import { createApp } from './example'
 
+const pkg = require('../package.json')
 const basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'))
 
 program.version(pkg.version)
@@ -17,13 +18,11 @@ program
  */
 program
   .command('create')
+  .usage('<app-name>')
   // .option('-e --example <example-name>')
   .description('create a new project.')
   .action( async () => {
-    // createApp()
     let [ name ] = program.args
-    // console.log(name, process.cwd())
-    // if (!name) return program.help()
     createApp(name)
   })
 
