@@ -105,6 +105,7 @@ function loadConfig(file) {
     }
     return data;
 }
+exports.loadConfig = loadConfig;
 function isConfigFile(file) {
     if (!fs.existsSync(file))
         return false;
@@ -113,6 +114,38 @@ function isConfigFile(file) {
         return false;
     return true;
 }
+exports.isConfigFile = isConfigFile;
+function installConfigFile(file) {
+    return __awaiter(this, void 0, void 0, function () {
+        var spinner, config, configStr, error_1;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    spinner = ora('Installing configuration ...').start();
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    if (!fs.existsSync(exports.__KENOTE))
+                        fs.mkdirpSync(exports.__KENOTE);
+                    config = loadConfig(file);
+                    configStr = yaml.dump(config);
+                    return [4, fs.writeFile(exports.__CONFIGFILE, configStr, 'utf-8')];
+                case 2:
+                    _a.sent();
+                    spinner.stop();
+                    spinner.succeed('Installing configuration complete.');
+                    return [3, 4];
+                case 3:
+                    error_1 = _a.sent();
+                    spinner.stop();
+                    spinner.fail(error_1.message);
+                    return [3, 4];
+                case 4: return [2];
+            }
+        });
+    });
+}
+exports.installConfigFile = installConfigFile;
 function getAuthor() {
     var _a, _b;
     var author = os.userInfo().username;
@@ -135,9 +168,9 @@ function getAuthor() {
     return author;
 }
 exports.getAuthor = getAuthor;
-function downloadRepo(repo, target, opttions) {
+function downloadRepo(repo, target, options) {
     return __awaiter(this, void 0, void 0, function () {
-        var spinner, error_1, message;
+        var spinner, error_2, message;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -159,13 +192,13 @@ function downloadRepo(repo, target, opttions) {
                     _a.sent();
                     spinner.stop();
                     spinner.succeed('Downloading repo complete.');
-                    refreshPackageJson(opttions, target);
+                    refreshPackageJson(options, target);
                     return [3, 5];
                 case 4:
-                    error_1 = _a.sent();
-                    message = error_1.message;
-                    if (error_1.host && error_1.path) {
-                        message += '\n' + error_1.host + error_1.path;
+                    error_2 = _a.sent();
+                    message = error_2.message;
+                    if (error_2.host && error_2.path) {
+                        message += '\n' + error_2.host + error_2.path;
                     }
                     spinner.stop();
                     spinner.fail(message);
@@ -183,10 +216,21 @@ function refreshPackageJson(options, target) {
     pkg = __assign(__assign({}, pkg), options);
     fs.writeJsonSync(packageFile, pkg, { encoding: 'utf-8', replacer: null, spaces: 2 });
 }
+function readPackageJson(target) {
+    if (!target) {
+        target = exports.__ROOTPATH;
+    }
+    var packageFile = path.resolve(target, 'package.json');
+    if (!isConfigFile(packageFile)) {
+        return undefined;
+    }
+    return loadConfig(packageFile);
+}
+exports.readPackageJson = readPackageJson;
 function installPackage(target, installer, results) {
     if (installer === void 0) { installer = 'npm'; }
     return __awaiter(this, void 0, void 0, function () {
-        var spinner, results_1, results_1_1, result, dir, _a, _b, line, error_2, message;
+        var spinner, results_1, results_1_1, result, dir, _a, _b, line, error_3, message;
         var e_1, _c, e_2, _d;
         return __generator(this, function (_e) {
             switch (_e.label) {
@@ -236,8 +280,8 @@ function installPackage(target, installer, results) {
                     }
                     return [3, 4];
                 case 3:
-                    error_2 = _e.sent();
-                    message = error_2.message;
+                    error_3 = _e.sent();
+                    message = error_3.message;
                     spinner.stop();
                     spinner.fail(message);
                     return [3, 4];

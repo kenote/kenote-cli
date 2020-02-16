@@ -57,24 +57,8 @@ var __spread = (this && this.__spread) || function () {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var inquirer = require("inquirer");
-var utils_1 = require("../utils");
+var utils_1 = require("./utils");
 var ts_optchain_1 = require("ts-optchain");
-function default_1() {
-    return __awaiter(this, void 0, void 0, function () {
-        var options;
-        return __generator(this, function (_a) {
-            options = inquirer.prompt([
-                {
-                    type: 'list',
-                    name: 'update',
-                    message: ''
-                }
-            ]);
-            return [2];
-        });
-    });
-}
-exports.default = default_1;
 exports.createApp = function (name) { return __awaiter(void 0, void 0, void 0, function () {
     var project, error_1;
     return __generator(this, function (_a) {

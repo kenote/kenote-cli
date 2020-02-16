@@ -11,7 +11,7 @@ import * as ini from 'ini'
 import * as runscript from 'runscript'
 import chalk from 'chalk'
 
-export const __HOMEPATH: string = os.homedir() // process.env.HOME || `${process.env.HOMEDRIVE}${process.env.HOMEPATH}`
+export const __HOMEPATH: string = os.homedir()
 export const __ROOTPATH: string = process.cwd()
 export const __KENOTE: string = path.resolve(__HOMEPATH, '.kenote')
 export const __CONFIGFILE: string = path.resolve(__KENOTE, 'config.yml')
@@ -44,7 +44,7 @@ export function getConfig (): Configuration {
  * 读取配置文件
  * @param file String
  */
-function loadConfig (file: string): Record<string, any> {
+export function loadConfig (file: string): Record<string, any> {
   let data: Record<string, any> = {}
   if (!isConfigFile(file)) return data
   let fileStr: string = fs.readFileSync(file, 'utf-8')
@@ -63,11 +63,30 @@ function loadConfig (file: string): Record<string, any> {
  * 判断配置文件
  * @param file String
  */
-function isConfigFile (file: string): boolean {
+export function isConfigFile (file: string): boolean {
   if (!fs.existsSync(file)) return false
   let stat: fs.Stats = fs.statSync(file)
   if (stat.isDirectory()) return false
   return true
+}
+
+/**
+ * 安装配置文件
+ * @param file string
+ */
+export async function installConfigFile (file: string): Promise<void> {
+  let spinner = ora('Installing configuration ...').start()
+  try {
+    if (!fs.existsSync(__KENOTE)) fs.mkdirpSync(__KENOTE)
+    let config: Record<string, any> = loadConfig(file)
+    let configStr: string = yaml.dump(config)
+    await fs.writeFile(__CONFIGFILE, configStr, 'utf-8')
+    spinner.stop()
+    spinner.succeed('Installing configuration complete.')
+  } catch (error) {
+    spinner.stop()
+    spinner.fail(error.message)
+  }
 }
 
 /**
@@ -99,7 +118,7 @@ export function getAuthor (): string {
  * @param repo string
  * @param target string
  */
-export async function downloadRepo (repo: string, target: string, opttions: Project.Package): Promise<void> {
+export async function downloadRepo (repo: string, target: string, options: Project.Package): Promise<void> {
   let spinner = ora('Downloading repo ...').start()
   try {
     await fs.remove(target)
@@ -111,7 +130,7 @@ export async function downloadRepo (repo: string, target: string, opttions: Proj
     })
     spinner.stop()
     spinner.succeed('Downloading repo complete.')
-    refreshPackageJson(opttions, target)
+    refreshPackageJson(options, target)
   } catch (error) {
     let message = error.message
     if (error.host && error.path) {
@@ -127,12 +146,28 @@ export async function downloadRepo (repo: string, target: string, opttions: Proj
  * @param options Project.Package
  * @param target string
  */
-function refreshPackageJson (options: Project.Package, target: string) {
+function refreshPackageJson (options: Project.Package, target: string): void {
   let packageFile: string = path.resolve(target, 'package.json')
   let pkg: Record<string, any> = fs.readJsonSync(packageFile, { encoding: 'utf-8' })
   unset(pkg, 'repository')
   pkg = { ...pkg, ...options }
   fs.writeJsonSync(packageFile, pkg, { encoding: 'utf-8', replacer: null, spaces: 2 })
+}
+
+/**
+ * 读取 package.json
+ * @param target string
+ */
+export function readPackageJson (target?: string): Record<string, any> | undefined {
+  if (!target) {
+    target = __ROOTPATH
+  }
+  let packageFile: string = path.resolve(target, 'package.json')
+  if (!isConfigFile(packageFile)) {
+    return undefined
+  }
+  
+  return loadConfig(packageFile) // fs.readJsonSync(packageFile, { encoding: 'utf-8' })
 }
 
 /**

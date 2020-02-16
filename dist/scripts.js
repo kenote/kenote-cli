@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -52,60 +51,50 @@ var __read = (this && this.__read) || function (o, n) {
     }
     return ar;
 };
+var __spread = (this && this.__spread) || function () {
+    for (var ar = [], i = 0; i < arguments.length; i++) ar = ar.concat(__read(arguments[i]));
+    return ar;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var path = require("path");
-var program = require("commander");
-var lodash_1 = require("lodash");
-var project_1 = require("./project");
-var scripts_1 = require("./scripts");
-var config_1 = require("./config");
-var serve_1 = require("./serve");
-var pkg = require('../package.json');
-var basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'));
-program.version(pkg.version);
-program
-    .name(/^(node|backpack)$/.test(basename) ? 'kenote' : basename)
-    .usage('[command] [options]')
-    .option('-p --port <port>', 'set http server port');
-program
-    .command('create')
-    .usage('<app-name>')
-    .description('create a new project.')
-    .action(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name;
-    return __generator(this, function (_b) {
-        _a = __read(program.args, 1), name = _a[0];
-        project_1.createApp(name);
-        return [2];
+var inquirer = require("inquirer");
+var runscript = require("runscript");
+var ts_optchain_1 = require("ts-optchain");
+var utils_1 = require("./utils");
+exports.default = (function () { return __awaiter(void 0, void 0, void 0, function () {
+    var pkg, project, scripts, options, error_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                pkg = utils_1.readPackageJson();
+                if (!ts_optchain_1.oc(pkg).scripts()) {
+                    console.log('No script command found, please check your package.json file.');
+                    process.exit(0);
+                }
+                project = utils_1.getProject();
+                console.log('> Where project on', project.target);
+                scripts = Object.keys(ts_optchain_1.oc(pkg).scripts({}));
+                _a.label = 1;
+            case 1:
+                _a.trys.push([1, 4, , 5]);
+                return [4, inquirer.prompt([
+                        {
+                            type: 'list',
+                            name: 'script',
+                            message: 'Choose a run script',
+                            choices: __spread(scripts)
+                        }
+                    ])];
+            case 2:
+                options = _a.sent();
+                return [4, runscript("npm run " + options.script)];
+            case 3:
+                _a.sent();
+                return [3, 5];
+            case 4:
+                error_1 = _a.sent();
+                console.error(error_1.message);
+                return [3, 5];
+            case 5: return [2];
+        }
     });
 }); });
-program
-    .command('config')
-    .usage('[filename]')
-    .description('get or set your configuration.')
-    .action(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name;
-    return __generator(this, function (_b) {
-        _a = __read(program.args, 1), name = _a[0];
-        config_1.default(name);
-        return [2];
-    });
-}); });
-program
-    .command('script')
-    .alias('run')
-    .description('run npm scripts of project.')
-    .action(scripts_1.default);
-program
-    .command('serve')
-    .alias('http')
-    .usage('[path] [options]')
-    .option('-p --port <port>', 'set http server port')
-    .description('simple http service.')
-    .action(function () {
-    var _a = __read(program.args, 1), name = _a[0];
-    serve_1.default(name, program.port);
-});
-if (lodash_1.isEmpty(program.parse(process.argv).alias) && process.argv.length === 2) {
-    program.help();
-}

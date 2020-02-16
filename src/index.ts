@@ -2,7 +2,10 @@
 import * as path from 'path'
 import * as program from 'commander'
 import { isEmpty } from 'lodash'
-import { createApp } from './example'
+import { createApp } from './project'
+import scripts from './scripts'
+import config from './config'
+import serve from './serve'
 
 const pkg = require('../package.json')
 const basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'))
@@ -12,6 +15,7 @@ program.version(pkg.version)
 program
   .name(/^(node|backpack)$/.test(basename) ? 'kenote' : basename)
   .usage('[command] [options]')
+  .option('-p --port <port>', 'set http server port')
 
 /**
  * 创建一个项目
@@ -19,7 +23,6 @@ program
 program
   .command('create')
   .usage('<app-name>')
-  // .option('-e --example <example-name>')
   .description('create a new project.')
   .action( async () => {
     let [ name ] = program.args
@@ -27,13 +30,38 @@ program
   })
 
 /**
- * 管理你的例子
+ * 查看/编辑配置文件
  */
 program
-  .command('example')
-  .description('manage your example.')
-  .action( () => {
+  .command('config')
+  .usage('[filename]')
+  .description('get or set your configuration.')
+  .action( async () => {
+    let [ name ] = program.args
+    config(name)
+  })
 
+/**
+ * 运行项目的npm脚本
+ */
+program
+  .command('script')
+  .alias('run')
+  .description('run npm scripts of project.')
+  .action( scripts )
+
+/**
+ * 简单HTTP服务
+ */
+program
+  .command('serve')
+  .alias('http')
+  .usage('[path] [options]')
+  .option('-p --port <port>', 'set http server port')
+  .description('simple http service.')
+  .action( () => {
+    let [ name ] = program.args
+    serve(name, program.port)
   })
 
 // Parse and fallback to help if no args

@@ -1,18 +1,8 @@
 import * as inquirer from 'inquirer'
-import { getProject, getConfig, getAuthor, downloadRepo, installPackage } from '../utils'
+import { getProject, getConfig, getAuthor, downloadRepo, installPackage } from './utils'
 import { } from 'lodash'
 import { oc } from 'ts-optchain'
-import { Project } from '../../types'
-
-export default async function (): Promise<void> {
-  let options = inquirer.prompt([
-    {
-      type: 'list',
-      name: 'update',
-      message: ''
-    }
-  ])
-}
+import { Project } from '../types'
 
 /**
  * 创建一个项目
