@@ -9,6 +9,29 @@ examples:
       - name       : To get started
         content    :
           - npm run serve
-      - name       : To build & start for production
+      - name       : To generate lib
         content    :
           - npm run lib
+      - name       : To build
+        content    :
+          - npm run build
+  - name         : Nuxt.js static website.
+    repository   : github:kenote/nuxt-static-example
+    value        : nuxt-static-example
+    results      :
+      - name       : To get started
+        content    :
+          - npm run dev
+      - name       : To generate html
+        content    :
+          - npm run generate
+  - name         : Next.js static website.
+    repository   : github:kenote/next-static-example
+    value        : next-static-example
+    results      :
+      - name       : To get started
+        content    :
+          - npm run dev
+      - name       : To export html
+        content    :
+          - npm run export
