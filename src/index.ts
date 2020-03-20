@@ -6,6 +6,7 @@ import { createApp } from './project'
 import scripts from './scripts'
 import config from './config'
 import serve from './serve'
+import deploy from './deploy'
 
 const pkg = require('../package.json')
 const basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'))
@@ -62,6 +63,17 @@ program
   .action( () => {
     let [ name ] = program.args
     serve(name, program.port)
+  })
+
+/**
+ * 部署服务
+ */
+program
+  .command('deploy')
+  .description('Deploy your service to the server.')
+  .action( () => {
+    let [ name ] = program.args
+    deploy(name)
   })
 
 // Parse and fallback to help if no args

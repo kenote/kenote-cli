@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -36,84 +35,61 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __read = (this && this.__read) || function (o, n) {
-    var m = typeof Symbol === "function" && o[Symbol.iterator];
-    if (!m) return o;
-    var i = m.call(o), r, ar = [], e;
-    try {
-        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
-    }
-    catch (error) { e = { error: error }; }
-    finally {
-        try {
-            if (r && !r.done && (m = i["return"])) m.call(i);
-        }
-        finally { if (e) throw e.error; }
-    }
-    return ar;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var path = require("path");
-var program = require("commander");
+var scp2_1 = require("scp2");
 var lodash_1 = require("lodash");
-var project_1 = require("./project");
-var scripts_1 = require("./scripts");
-var config_1 = require("./config");
-var serve_1 = require("./serve");
-var deploy_1 = require("./deploy");
-var pkg = require('../package.json');
-var basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'));
-program.version(pkg.version);
-program
-    .name(/^(node|backpack)$/.test(basename) ? 'kenote' : basename)
-    .usage('[command] [options]')
-    .option('-p --port <port>', 'set http server port');
-program
-    .command('create')
-    .usage('<app-name>')
-    .description('create a new project.')
-    .action(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name;
-    return __generator(this, function (_b) {
-        _a = __read(program.args, 1), name = _a[0];
-        project_1.createApp(name);
-        return [2];
-    });
-}); });
-program
-    .command('config')
-    .usage('[filename]')
-    .description('get or set your configuration.')
-    .action(function () { return __awaiter(void 0, void 0, void 0, function () {
-    var _a, name;
-    return __generator(this, function (_b) {
-        _a = __read(program.args, 1), name = _a[0];
-        config_1.default(name);
-        return [2];
-    });
-}); });
-program
-    .command('script')
-    .alias('run')
-    .description('run npm scripts of project.')
-    .action(scripts_1.default);
-program
-    .command('serve')
-    .alias('http')
-    .usage('[path] [options]')
-    .option('-p --port <port>', 'set http server port')
-    .description('simple http service.')
-    .action(function () {
-    var _a = __read(program.args, 1), name = _a[0];
-    serve_1.default(name, program.port);
-});
-program
-    .command('deploy')
-    .description('Deploy your service to the server.')
-    .action(function () {
-    var _a = __read(program.args, 1), name = _a[0];
-    deploy_1.default(name);
-});
-if (lodash_1.isEmpty(program.parse(process.argv).alias) && process.argv.length === 2) {
-    program.help();
-}
+var SFTP = (function () {
+    function SFTP(options) {
+        this.__Options = options;
+    }
+    SFTP.prototype.connect = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                this.__Client = new scp2_1.Client(this.__Options);
+                return [2, new Promise(function (resolve, reject) {
+                        _this.__Client
+                            .on('ready', function () {
+                            console.log('');
+                            console.log('Sftp :: connect to %s', _this.__Options.host, '\n');
+                        })
+                            .on('error', function (err) {
+                            reject(err);
+                        })
+                            .on('close', function () {
+                        })
+                            .sftp(function (err, sftp) {
+                            if (err) {
+                                reject(err);
+                            }
+                            else {
+                                resolve(sftp);
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    SFTP.prototype.upload = function (file) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2, new Promise(function (resolve, reject) {
+                        _this.__Client.upload(file.filepath, file.dest, function (err) {
+                            if (err) {
+                                reject(lodash_1.isString(err) ? new Error(err) : err);
+                            }
+                            else {
+                                resolve(undefined);
+                            }
+                        });
+                    })];
+            });
+        });
+    };
+    SFTP.prototype.end = function () {
+        this.__Client.close();
+    };
+    return SFTP;
+}());
+exports.default = SFTP;

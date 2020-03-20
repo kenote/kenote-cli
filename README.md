@@ -24,6 +24,7 @@ Commands:
   config                get or set your configuration.
   script|run            run npm scripts of project.
   serve|http [options]  simple http service.
+  deploy                Deploy your service to the server.
 ```
 
 ## License
