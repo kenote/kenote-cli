@@ -35,3 +35,23 @@ examples:
       - name       : To export html
         content    :
           - npm run export
+  - name         : Nuxt.js with Express.
+    repository   : github:kenote/nuxt-express-example
+    value        : nuxt-express-example
+    results      :
+      - name       : To get started
+        content    :
+          - npm run develop
+      - name       : To get build
+        content    :
+          - npm run build
+  - name         : Next.js with Express.
+    repository   : github:kenote/next-express-example
+    value        : next-express-example
+    results      :
+      - name       : To get started
+        content    :
+          - npm run develop
+      - name       : To get build
+        content    :
+          - npm run build

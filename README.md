@@ -2,10 +2,14 @@
 
 A personal command line tool.
 
+[![NPM Version][npm-image]][npm-url]
+[![NPM Downloads][downloads-image]][downloads-url]
+[![Gratipay][licensed-image]][licensed-url]
+
 ## Install
 
 ```bash
-$ npm i -g https://github.com/kenote/kenote-cli
+$ npm i -g kenote-cli
 ```
 
 ## Usage
@@ -31,7 +35,9 @@ Commands:
 
 this repo is released under the [MIT License][licensed-url].
 
+[npm-image]: https://img.shields.io/npm/v/kenote-cli.svg
+[npm-url]: https://www.npmjs.com/package/kenote-cli
+[downloads-image]: https://img.shields.io/npm/dm/kenote-cli.svg
+[downloads-url]: https://www.npmjs.com/package/kenote-cli
 [licensed-image]: https://img.shields.io/badge/license-MIT-blue.svg
 [licensed-url]: https://github.com/kenote/kenote-cli/blob/master/LICENSE
-
-

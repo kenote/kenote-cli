@@ -4,6 +4,7 @@
   "description": "A personal command line tool.",
   "main": "dist/index.js",
   "typings": "types/index.d.ts",
+  "preferGlobal": true,
   "repository": "https://github.com/kenote/kenote-cli.git",
   "author": "thondery <thondery@163.com>",
   "license": "MIT",
@@ -50,6 +51,7 @@
     "build": "rm -rf ./dist && tsc"
   },
   "bin": {
-    "kenote": "dist/index.js"
+    "kenote": "dist/index.js",
+    "ko": "dist/index.js"
   }
 }
