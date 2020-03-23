@@ -9,7 +9,7 @@ import * as ora from 'ora'
 import { unset } from 'lodash'
 import * as ini from 'ini'
 import * as runscript from 'runscript'
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 
 export const __HOMEPATH: string = os.homedir()
 export const __ROOTPATH: string = process.cwd()

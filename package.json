@@ -29,6 +29,7 @@
     "archiver": "^3.1.1",
     "async": "^3.2.0",
     "basic-ftp": "^4.5.3",
+    "chalk": "^3.0.0",
     "commander": "^4.1.0",
     "dayjs": "^1.8.23",
     "download-git-repo": "^3.0.2",

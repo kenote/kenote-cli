@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var path = require("path");
 var yaml = require("js-yaml");
-var chalk_1 = require("chalk");
+var chalk = require("chalk");
 var utils_1 = require("./utils");
 exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, function () {
     var config, confifFile, error_1;
@@ -52,7 +52,7 @@ exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, fu
                 }
                 confifFile = path.resolve(utils_1.__ROOTPATH, name);
                 if (!['.yml', '.yaml', '.json'].includes(path.extname(name)) || !utils_1.isConfigFile(confifFile)) {
-                    console.warn(chalk_1.default.bold.yellow('Warnning:'), 'Please fill in the correct file path.');
+                    console.warn(chalk.bold.yellow('Warnning:'), 'Please fill in the correct file path.');
                     process.exit(0);
                 }
                 _a.label = 1;

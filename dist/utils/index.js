@@ -68,7 +68,7 @@ var ora = require("ora");
 var lodash_1 = require("lodash");
 var ini = require("ini");
 var runscript = require("runscript");
-var chalk_1 = require("chalk");
+var chalk = require("chalk");
 exports.__HOMEPATH = os.homedir();
 exports.__ROOTPATH = process.cwd();
 exports.__KENOTE = path.resolve(exports.__HOMEPATH, '.kenote');
@@ -147,7 +147,7 @@ function installConfigFile(file) {
 }
 exports.installConfigFile = installConfigFile;
 function getAuthor() {
-    var _a, _b;
+    var _a;
     var author = os.userInfo().username;
     var gitConfigFile = path.resolve(exports.__HOMEPATH, '.gitconfig');
     if (!isConfigFile(gitConfigFile)) {
@@ -157,7 +157,7 @@ function getAuthor() {
         var gitConfig = ini.parse(fs.readFileSync(gitConfigFile, 'utf-8'));
         if (gitConfig.user) {
             var userinfo = [gitConfig.user.name];
-            if ((_b = (_a = gitConfig) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.email) {
+            if ((_a = gitConfig === null || gitConfig === void 0 ? void 0 : gitConfig.user) === null || _a === void 0 ? void 0 : _a.email) {
                 userinfo.push("<" + gitConfig.user.email + ">");
             }
             return userinfo.join(' ');
@@ -249,10 +249,10 @@ function installPackage(target, installer, results) {
                         try {
                             for (results_1 = __values(results), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
                                 result = results_1_1.value;
-                                console.log('\n ', chalk_1.default.bold(result.name + ":"), '\n');
+                                console.log('\n ', chalk.bold(result.name + ":"), '\n');
                                 if (exports.__ROOTPATH !== target) {
                                     dir = exports.__ROOTPATH === path.dirname(target) ? path.basename(target) : target;
-                                    console.log('   ', chalk_1.default.blue('cd'), dir);
+                                    console.log('   ', chalk.blue('cd'), dir);
                                 }
                                 try {
                                     for (_a = (e_2 = void 0, __values(result.content)), _b = _a.next(); !_b.done; _b = _a.next()) {

@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var ssh2_1 = require("ssh2");
-var chalk_1 = require("chalk");
+var chalk = require("chalk");
 var SSH = (function () {
     function SSH(options) {
         this.__Options = options;
@@ -57,10 +57,9 @@ var SSH = (function () {
                             console.log(command);
                             console.log('');
                             client.exec(command, function (err, stream) {
-                                var _a;
                                 if (err)
                                     throw err;
-                                (_a = stream) === null || _a === void 0 ? void 0 : _a.on('close', function (code, signal) { return client.end(); }).on('data', function (data) { return console.log(chalk_1.default.greenBright(data.toString())); }).stderr.on('data', function (data) { return console.log('STDERR:', data.toString()); });
+                                stream === null || stream === void 0 ? void 0 : stream.on('close', function (code, signal) { return client.end(); }).on('data', function (data) { return console.log(chalk.greenBright(data.toString())); }).stderr.on('data', function (data) { return console.log('STDERR:', data.toString()); });
                             });
                         })
                             .on('error', function (err) { return reject(err); })

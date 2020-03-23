@@ -3,7 +3,7 @@ import * as http from 'http'
 import * as express from 'express'
 import { __ROOTPATH } from './utils'
 import * as address from 'address'
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 
 export default async (name: string, port: string) => {
   let PORT: number = Number(port) || 5055

@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as yaml from 'js-yaml'
-import chalk from 'chalk'
+import * as chalk from 'chalk'
 import { getConfig, __ROOTPATH, isConfigFile, installConfigFile } from './utils'
 
 export default async (name: string): Promise<void> => {

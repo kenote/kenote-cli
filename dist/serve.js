@@ -41,7 +41,7 @@ var http = require("http");
 var express = require("express");
 var utils_1 = require("./utils");
 var address = require("address");
-var chalk_1 = require("chalk");
+var chalk = require("chalk");
 exports.default = (function (name, port) { return __awaiter(void 0, void 0, void 0, function () {
     var PORT, rootPath, app, ipAddress, error_1;
     return __generator(this, function (_a) {
@@ -52,7 +52,7 @@ exports.default = (function (name, port) { return __awaiter(void 0, void 0, void
                 app = express();
                 app.use(express.static(rootPath));
                 ipAddress = address.ip();
-                console.log(chalk_1.default.gray("> Running project in " + rootPath));
+                console.log(chalk.gray("> Running project in " + rootPath));
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 3, , 4]);
@@ -63,9 +63,9 @@ exports.default = (function (name, port) { return __awaiter(void 0, void 0, void
                     })];
             case 2:
                 _a.sent();
-                console.log(chalk_1.default.bold('\n  App running at:'));
-                console.log('  - Local:  ', chalk_1.default.blue("http://localhost:" + PORT));
-                console.log('  - Network:', chalk_1.default.blue("http://" + ipAddress + ":" + PORT));
+                console.log(chalk.bold('\n  App running at:'));
+                console.log('  - Local:  ', chalk.blue("http://localhost:" + PORT));
+                console.log('  - Network:', chalk.blue("http://" + ipAddress + ":" + PORT));
                 console.log('');
                 return [3, 4];
             case 3:
