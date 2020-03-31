@@ -1,6 +1,6 @@
 {
   "name": "kenote-cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A personal command line tool.",
   "main": "dist/index.js",
   "typings": "types/index.d.ts",
@@ -22,7 +22,7 @@
     "@types/node": "^13.5.0",
     "@types/ssh2": "^0.5.41",
     "@types/validator": "^12.0.1",
-    "tslint": "^6.0.0",
+    "tslint": "^6.1.0",
     "typescript": "^3.7.5"
   },
   "dependencies": {

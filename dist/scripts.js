@@ -58,24 +58,27 @@ var __spread = (this && this.__spread) || function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 var inquirer = require("inquirer");
 var runscript = require("runscript");
+var path = require("path");
 var ts_optchain_1 = require("ts-optchain");
 var utils_1 = require("./utils");
-exports.default = (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var pkg, project, scripts, options, error_1;
+exports.default = (function (name, tag) { return __awaiter(void 0, void 0, void 0, function () {
+    var pkg, project, scripts, scriptTagname_1, options, isScript, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                pkg = utils_1.readPackageJson();
+                pkg = utils_1.readPackageJson(name);
                 if (!ts_optchain_1.oc(pkg).scripts()) {
                     console.log('No script command found, please check your package.json file.');
                     process.exit(0);
                 }
-                project = utils_1.getProject();
+                project = utils_1.getProject(name);
                 console.log('> Where project on', project.target);
                 scripts = Object.keys(ts_optchain_1.oc(pkg).scripts({}));
                 _a.label = 1;
             case 1:
-                _a.trys.push([1, 4, , 5]);
+                _a.trys.push([1, 5, , 6]);
+                scriptTagname_1 = tag;
+                if (!!tag) return [3, 3];
                 return [4, inquirer.prompt([
                         {
                             type: 'list',
@@ -86,15 +89,23 @@ exports.default = (function () { return __awaiter(void 0, void 0, void 0, functi
                     ])];
             case 2:
                 options = _a.sent();
-                return [4, runscript("npm run " + options.script)];
+                scriptTagname_1 = options.script;
+                _a.label = 3;
             case 3:
-                _a.sent();
-                return [3, 5];
+                isScript = scripts.find(function (o) { return o === scriptTagname_1; });
+                if (!isScript) {
+                    console.log('No script command found, please check your package.json file.');
+                    process.exit(0);
+                }
+                return [4, runscript("npm run " + scriptTagname_1, { cwd: path.resolve(utils_1.__ROOTPATH, (name !== null && name !== void 0 ? name : '')) })];
             case 4:
+                _a.sent();
+                return [3, 6];
+            case 5:
                 error_1 = _a.sent();
                 console.error(error_1.message);
-                return [3, 5];
-            case 5: return [2];
+                return [3, 6];
+            case 6: return [2];
         }
     });
 }); });

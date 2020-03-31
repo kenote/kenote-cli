@@ -57,9 +57,10 @@ var SSH = (function () {
                             console.log(command);
                             console.log('');
                             client.exec(command, function (err, stream) {
+                                var _a;
                                 if (err)
                                     throw err;
-                                stream === null || stream === void 0 ? void 0 : stream.on('close', function (code, signal) { return client.end(); }).on('data', function (data) { return console.log(chalk.greenBright(data.toString())); }).stderr.on('data', function (data) { return console.log('STDERR:', data.toString()); });
+                                (_a = stream) === null || _a === void 0 ? void 0 : _a.on('close', function (code, signal) { return client.end(); }).on('data', function (data) { return console.log(chalk.greenBright(data.toString())); }).stderr.on('data', function (data) { return console.log('STDERR:', data.toString()); });
                             });
                         })
                             .on('error', function (err) { return reject(err); })

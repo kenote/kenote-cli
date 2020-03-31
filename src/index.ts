@@ -17,6 +17,7 @@ program
   .name(/^(node|backpack)$/.test(basename) ? 'kenote' : basename)
   .usage('[command] [options]')
   .option('-p --port <port>', 'set http server port')
+  .option('-t --tag <tag-name>', 'choose a script tag.')
 
 /**
  * 创建一个项目
@@ -48,8 +49,13 @@ program
 program
   .command('script')
   .alias('run')
+  .usage('[path] [options]')
+  .option('-t --tag <tag-name>', 'choose a script tag.')
   .description('run npm scripts of project.')
-  .action( scripts )
+  .action( () => {
+    let [ name ] = program.args
+    scripts(name, program.tag)
+  })
 
 /**
  * 简单HTTP服务

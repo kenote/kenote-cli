@@ -21,6 +21,7 @@ Usage: kenote [command] [options]
 Options:
   -V, --version         output the version number
   -p --port <port>      set http server port
+  -t --tag <tag-name>   choose a script tag.
   -h, --help            output usage information
 
 Commands:

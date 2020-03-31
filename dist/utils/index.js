@@ -147,7 +147,7 @@ function installConfigFile(file) {
 }
 exports.installConfigFile = installConfigFile;
 function getAuthor() {
-    var _a;
+    var _a, _b;
     var author = os.userInfo().username;
     var gitConfigFile = path.resolve(exports.__HOMEPATH, '.gitconfig');
     if (!isConfigFile(gitConfigFile)) {
@@ -157,7 +157,7 @@ function getAuthor() {
         var gitConfig = ini.parse(fs.readFileSync(gitConfigFile, 'utf-8'));
         if (gitConfig.user) {
             var userinfo = [gitConfig.user.name];
-            if ((_a = gitConfig === null || gitConfig === void 0 ? void 0 : gitConfig.user) === null || _a === void 0 ? void 0 : _a.email) {
+            if ((_b = (_a = gitConfig) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.email) {
                 userinfo.push("<" + gitConfig.user.email + ">");
             }
             return userinfo.join(' ');

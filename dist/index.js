@@ -67,7 +67,8 @@ program.version(pkg.version);
 program
     .name(/^(node|backpack)$/.test(basename) ? 'kenote' : basename)
     .usage('[command] [options]')
-    .option('-p --port <port>', 'set http server port');
+    .option('-p --port <port>', 'set http server port')
+    .option('-t --tag <tag-name>', 'choose a script tag.');
 program
     .command('create')
     .usage('<app-name>')
@@ -95,8 +96,13 @@ program
 program
     .command('script')
     .alias('run')
+    .usage('[path] [options]')
+    .option('-t --tag <tag-name>', 'choose a script tag.')
     .description('run npm scripts of project.')
-    .action(scripts_1.default);
+    .action(function () {
+    var _a = __read(program.args, 1), name = _a[0];
+    scripts_1.default(name, program.tag);
+});
 program
     .command('serve')
     .alias('http')

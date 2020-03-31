@@ -81,10 +81,11 @@ exports.createApp = function (name) { return __awaiter(void 0, void 0, void 0, f
     });
 }); };
 function initProject(name) {
+    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function () {
         var project, actions, examples, options, example;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        return __generator(this, function (_d) {
+            switch (_d.label) {
                 case 0:
                     project = utils_1.getProject(name);
                     if (!project.exists) return [3, 2];
@@ -97,11 +98,11 @@ function initProject(name) {
                             }
                         ])];
                 case 1:
-                    actions = _a.sent();
+                    actions = _d.sent();
                     if (!actions.overwrite) {
                         process.exit(0);
                     }
-                    _a.label = 2;
+                    _d.label = 2;
                 case 2:
                     console.log('> Generating project in', project.target);
                     examples = utils_1.getConfig().examples;
@@ -142,16 +143,16 @@ function initProject(name) {
                             }
                         ])];
                 case 3:
-                    options = _a.sent();
-                    example = examples === null || examples === void 0 ? void 0 : examples.find(function (o) { return o.value === options.example; });
+                    options = _d.sent();
+                    example = (_a = examples) === null || _a === void 0 ? void 0 : _a.find(function (o) { return o.value === options.example; });
                     return [2, {
                             name: options.name,
                             description: options.description,
                             author: options.author,
                             installer: options.installer,
                             target: project.target,
-                            repository: example === null || example === void 0 ? void 0 : example.repository,
-                            results: example === null || example === void 0 ? void 0 : example.results
+                            repository: (_b = example) === null || _b === void 0 ? void 0 : _b.repository,
+                            results: (_c = example) === null || _c === void 0 ? void 0 : _c.results
                         }];
             }
         });
