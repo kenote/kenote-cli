@@ -97,7 +97,7 @@ exports.default = (function (name, tag) { return __awaiter(void 0, void 0, void 
                     console.log('No script command found, please check your package.json file.');
                     process.exit(0);
                 }
-                return [4, runscript("npm run " + scriptTagname_1, { cwd: path.resolve(utils_1.__ROOTPATH, (name !== null && name !== void 0 ? name : '')) })];
+                return [4, runscript("npm run " + scriptTagname_1, { cwd: path.resolve(utils_1.__ROOTPATH, name !== null && name !== void 0 ? name : '') })];
             case 4:
                 _a.sent();
                 return [3, 6];

@@ -58,6 +58,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.installPackage = exports.readPackageJson = exports.downloadRepo = exports.getAuthor = exports.installConfigFile = exports.isConfigFile = exports.loadConfig = exports.getConfig = exports.getProject = exports.__CLI_DIR = exports.__CONFIGFILE = exports.__KENOTE = exports.__ROOTPATH = exports.__HOMEPATH = void 0;
 var path = require("path");
 var yaml = require("js-yaml");
 var fs = require("fs-extra");
@@ -147,7 +148,7 @@ function installConfigFile(file) {
 }
 exports.installConfigFile = installConfigFile;
 function getAuthor() {
-    var _a, _b;
+    var _a;
     var author = os.userInfo().username;
     var gitConfigFile = path.resolve(exports.__HOMEPATH, '.gitconfig');
     if (!isConfigFile(gitConfigFile)) {
@@ -157,7 +158,7 @@ function getAuthor() {
         var gitConfig = ini.parse(fs.readFileSync(gitConfigFile, 'utf-8'));
         if (gitConfig.user) {
             var userinfo = [gitConfig.user.name];
-            if ((_b = (_a = gitConfig) === null || _a === void 0 ? void 0 : _a.user) === null || _b === void 0 ? void 0 : _b.email) {
+            if ((_a = gitConfig === null || gitConfig === void 0 ? void 0 : gitConfig.user) === null || _a === void 0 ? void 0 : _a.email) {
                 userinfo.push("<" + gitConfig.user.email + ">");
             }
             return userinfo.join(' ');

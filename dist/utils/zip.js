@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.zip = void 0;
 var fs = require("fs-extra");
 var archiver = require("archiver");
 function zip(file, patterns, globOptions, format) {
@@ -40,7 +41,9 @@ function zip(file, patterns, globOptions, format) {
             resolve(archiveSize);
         });
         archive.pipe(output);
-        archive.glob(patterns, globOptions);
+        patterns.map(function (pattern) {
+            archive.glob(pattern, globOptions);
+        });
         archive.finalize();
     });
 }

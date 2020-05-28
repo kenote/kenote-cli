@@ -71,15 +71,15 @@ var utils_1 = require("./utils");
 var zip_1 = require("./utils/zip");
 exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, function () {
     var projects, project, selector_1, _a, rootDir, ignore, rules, type, connect, deployTo, beforeScripts, remoteCommand, unzip, workspace, _b, host, port, username, password, privateKey, secure, RemoteCommand, zipfileName, zipfile, globOptions, files, uploadFiles, client, error_1;
-    var _c, _d, _e;
-    return __generator(this, function (_f) {
-        switch (_f.label) {
+    var _c;
+    return __generator(this, function (_d) {
+        switch (_d.label) {
             case 0:
-                _f.trys.push([0, 15, , 16]);
+                _d.trys.push([0, 15, , 16]);
                 return [4, getConfigFile(name)];
             case 1:
-                projects = (_f.sent()).projects;
-                if (((_c = projects) === null || _c === void 0 ? void 0 : _c.length) === 0) {
+                projects = (_d.sent()).projects;
+                if ((projects === null || projects === void 0 ? void 0 : projects.length) === 0) {
                     console.log('Please configure a project first.');
                     process.exit(0);
                 }
@@ -96,9 +96,9 @@ exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, fu
                     }
                 ])];
             case 3:
-                selector_1 = _f.sent();
-                project = (_e = (_d = projects) === null || _d === void 0 ? void 0 : _d.find(function (o) { return o.value === selector_1.project; }), (_e !== null && _e !== void 0 ? _e : projects[0]));
-                _f.label = 4;
+                selector_1 = _d.sent();
+                project = (_c = projects === null || projects === void 0 ? void 0 : projects.find(function (o) { return o.value === selector_1.project; })) !== null && _c !== void 0 ? _c : projects[0];
+                _d.label = 4;
             case 4:
                 _a = parseProject(project), rootDir = _a.rootDir, ignore = _a.ignore, rules = _a.rules, type = _a.type, connect = _a.connect, deployTo = _a.deployTo, beforeScripts = _a.beforeScripts, remoteCommand = _a.remoteCommand, unzip = _a.unzip;
                 workspace = path.resolve(utils_1.__ROOTPATH, rootDir);
@@ -106,8 +106,8 @@ exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, fu
                 console.log('Start running pre-script ...\n');
                 return [4, runscript(beforeScripts.join(' && '))];
             case 5:
-                _f.sent();
-                _f.label = 6;
+                _d.sent();
+                _d.label = 6;
             case 6:
                 _b = connect, host = _b.host, port = _b.port, username = _b.username, password = _b.password, privateKey = _b.privateKey, secure = _b.secure;
                 RemoteCommand = [];
@@ -115,48 +115,48 @@ exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, fu
                 zipfile = path.resolve(utils_1.__ROOTPATH, zipfileName);
                 if (!connect) return [3, 12];
                 globOptions = { cwd: workspace, nodir: true, realpath: true, ignore: ignore };
-                return [4, pickFils(['**'], globOptions)];
+                return [4, pickFils(['.**/**', '**'], globOptions)];
             case 7:
-                files = _f.sent();
+                files = _d.sent();
                 uploadFiles = processFiles(files, { workspace: workspace, deployTo: deployTo, rules: rules });
                 if (!(unzip && type === 'sftp')) return [3, 9];
                 console.log('\nStarting compressing folders ...');
-                return [4, zip_1.zip(zipfile, '**', globOptions)];
+                return [4, zip_1.zip(zipfile, ['.**/**', '**'], globOptions)];
             case 8:
-                _f.sent();
+                _d.sent();
                 uploadFiles = [{
                         filename: "/" + zipfileName,
                         filepath: zipfile,
                         dest: path.resolve(deployTo, zipfileName)
                     }];
-                RemoteCommand = ["cd " + deployTo, "tar -zxvf " + zipfileName, "rm -rf " + zipfileName].concat((remoteCommand !== null && remoteCommand !== void 0 ? remoteCommand : []));
-                _f.label = 9;
+                RemoteCommand = ["cd " + deployTo, "tar -zxvf " + zipfileName, "rm -rf " + zipfileName].concat(remoteCommand !== null && remoteCommand !== void 0 ? remoteCommand : []);
+                _d.label = 9;
             case 9:
                 client = type === 'sftp'
                     ? new sftp_1.default({ host: host, port: port, username: username, password: password, privateKey: privateKey })
                     : new ftp_1.default({ host: host, port: port, user: username, password: password, secure: secure });
                 return [4, client.connect()];
             case 10:
-                _f.sent();
+                _d.sent();
                 return [4, upload(client, uploadFiles)];
             case 11:
-                _f.sent();
+                _d.sent();
                 console.log('');
                 client.end();
-                _f.label = 12;
+                _d.label = 12;
             case 12:
                 if (!(RemoteCommand.length > 0 && type === 'sftp')) return [3, 14];
                 return [4, new ssh_1.default({ host: host, port: port, username: username, password: password, privateKey: privateKey }).exec(RemoteCommand.join(' && '))];
             case 13:
-                _f.sent();
+                _d.sent();
                 console.log('Command execution completed.\n');
                 if (fs.existsSync(zipfile)) {
                     fs.unlinkSync(zipfile);
                 }
-                _f.label = 14;
+                _d.label = 14;
             case 14: return [3, 16];
             case 15:
-                error_1 = _f.sent();
+                error_1 = _d.sent();
                 console.error(error_1.message);
                 return [3, 16];
             case 16: return [2];
@@ -173,12 +173,12 @@ function getConfigFile(name) {
                         files = fs.readdirSync(utils_1.__ROOTPATH);
                         name = files.find(function (o) { return /^(deploy\.config)\.(ya?ml|json|js)$/.test(o); });
                     }
-                    configFile = path.resolve(utils_1.__ROOTPATH, (name !== null && name !== void 0 ? name : ''));
+                    configFile = path.resolve(utils_1.__ROOTPATH, name !== null && name !== void 0 ? name : '');
                     if (!/\.(ya??ml|json|js)$/.test(name) || !fs.existsSync(configFile)) {
                         console.log('No configuration files found.');
                         process.exit(0);
                     }
-                    if (/\.(ya?ml|json)$/.test((name !== null && name !== void 0 ? name : ''))) {
+                    if (/\.(ya?ml|json)$/.test(name !== null && name !== void 0 ? name : '')) {
                         return [2, utils_1.loadConfig(configFile)];
                     }
                     return [4, Promise.resolve().then(function () { return require(configFile); })];
@@ -198,7 +198,7 @@ function pickFils(patterns, options) {
                             reject(err);
                         }
                         else {
-                            var files = ((results !== null && results !== void 0 ? results : [])).reduce(function (files, item) { return files.concat(item); });
+                            var files = (results !== null && results !== void 0 ? results : []).reduce(function (files, item) { return files.concat(item); });
                             resolve(files);
                         }
                     });
@@ -249,12 +249,11 @@ function failure(file) {
 function processFiles(files, options) {
     var workspace = options.workspace, deployTo = options.deployTo, rules = options.rules;
     return files.map(function (item) {
-        var _a;
         var filename = item.replace(new RegExp("^(" + workspace + ")"), '');
         var filepath = item;
         var dest = path.join(deployTo || '/home', filename);
         var file = { filename: filename, filepath: filepath, dest: dest };
-        (_a = rules) === null || _a === void 0 ? void 0 : _a.forEach(function (rule) {
+        rules === null || rules === void 0 ? void 0 : rules.forEach(function (rule) {
             customDest(file, rule, deployTo);
         });
         return file;
@@ -273,7 +272,7 @@ function parseProject(project) {
     var _a;
     var type = project.type;
     var defaultPort = type === 'ftp' ? 21 : 22;
-    project.connect.port = (_a = project.connect.port, (_a !== null && _a !== void 0 ? _a : defaultPort));
+    project.connect.port = (_a = project.connect.port) !== null && _a !== void 0 ? _a : defaultPort;
     if (type === 'ftp') {
         project.remoteCommand = undefined;
     }

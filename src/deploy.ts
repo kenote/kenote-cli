@@ -50,12 +50,12 @@ export default async (name: string) => {
     let zipfile: string = path.resolve(__ROOTPATH, zipfileName)
     if (connect) {
       let globOptions: glob.IOptions = { cwd: workspace, nodir: true, realpath: true, ignore }
-      let files = await pickFils(['**'], globOptions)
+      let files = await pickFils(['.**/**', '**'], globOptions)
       let uploadFiles: UploadFile[] = processFiles(files, { workspace, deployTo, rules })
       if (unzip && type === 'sftp') {
         // 压缩上传文件
         console.log('\nStarting compressing folders ...')
-        await zip(zipfile, '**', globOptions)
+        await zip(zipfile, ['.**/**', '**'], globOptions)
         uploadFiles = [{
           filename: `/${zipfileName}`,
           filepath: zipfile,

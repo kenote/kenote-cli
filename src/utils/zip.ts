@@ -3,7 +3,7 @@ import * as fs from 'fs-extra'
 import * as archiver from 'archiver'
 import * as glob from 'glob'
 
-export function zip (file: string, patterns: string, globOptions: glob.IOptions, format: archiver.Format = 'tar'): Promise<number> {
+export function zip (file: string, patterns: string[], globOptions: glob.IOptions, format: archiver.Format = 'tar'): Promise<number> {
   let options: archiver.ArchiverOptions = format === 'zip' ?
     {
       zlib: {
@@ -41,7 +41,9 @@ export function zip (file: string, patterns: string, globOptions: glob.IOptions,
       resolve(archiveSize)
     })
     archive.pipe(output)
-    archive.glob(patterns, globOptions)
+    patterns.map( pattern => {
+      archive.glob(pattern, globOptions)
+    })
     archive.finalize()
   })
 }
