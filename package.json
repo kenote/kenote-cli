@@ -1,6 +1,6 @@
 {
   "name": "kenote-cli",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A personal command line tool.",
   "main": "dist/index.js",
   "typings": "types/index.d.ts",
@@ -41,7 +41,7 @@
     "js-yaml": "^3.14.0",
     "ora": "^4.0.5",
     "runscript": "^1.5.0",
-    "scp2": "https://github.com/spmjs/node-scp2",
+    "scp2": "0.5.0",
     "ssh2": "^0.8.9",
     "ts-node": "^8.10.2",
     "ts-optchain": "^0.1.8",
