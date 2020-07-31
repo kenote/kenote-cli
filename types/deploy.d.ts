@@ -26,6 +26,11 @@ export declare namespace Configuration {
   }
 }
 
+export interface DeployOptions {
+  onlyCompress      ?: boolean
+  nodeModules       ?: boolean
+}
+
 export interface Configuration {
 
   projects           : Configuration.project[]

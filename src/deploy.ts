@@ -11,9 +11,12 @@ import SFTP from './utils/sftp'
 import SSH from './utils/ssh'
 import { __ROOTPATH, loadConfig } from './utils'
 import { zip } from './utils/zip'
-import { Configuration, UploadFile, UploadOptions, Rule } from '../types/deploy'
+import { Configuration, UploadFile, UploadOptions, Rule, DeployOptions } from '../types/deploy'
 
-export default async (name: string) => {
+export default async (name: string, options: DeployOptions): Promise<void> => {
+  let zipfileName: string = dayjs().format('YYYY-MM-DDTHHmmss') + '.tar.gz'
+  let zipfile: string = path.resolve(__ROOTPATH, zipfileName)
+  let { onlyCompress, nodeModules } = options
   try {
     let { projects } = await getConfigFile(name) as Configuration
     if (projects?.length === 0) {
@@ -46,8 +49,6 @@ export default async (name: string) => {
     // 上传文件队列 ...
     let { host, port, username, password, privateKey, secure } = connect as Configuration.connect
     let RemoteCommand: string[] = []
-    let zipfileName: string = dayjs().format('YYYY-MM-DDTHHmmss') + '.tar.gz'
-    let zipfile: string = path.resolve(__ROOTPATH, zipfileName)
     if (connect) {
       let globOptions: glob.IOptions = { cwd: workspace, nodir: true, realpath: true, ignore }
       let files = await pickFils(['.**/**', '**'], globOptions)
@@ -55,7 +56,11 @@ export default async (name: string) => {
       if (unzip && type === 'sftp') {
         // 压缩上传文件
         console.log('\nStarting compressing folders ...')
-        await zip(zipfile, ['.**/**', '**'], globOptions)
+        let append: string[][] = []
+        if (nodeModules) {
+          append.push(['node_modules/', 'node_modules'])
+        }
+        await zip(zipfile, ['.**/**', '**'], globOptions, append)
         uploadFiles = [{
           filename: `/${zipfileName}`,
           filepath: zipfile,
@@ -63,21 +68,23 @@ export default async (name: string) => {
         }]
         RemoteCommand = [ `cd ${deployTo}`, `tar -zxvf ${zipfileName}`, `rm -rf ${zipfileName}` ].concat(remoteCommand??[])
       }
-      let client = type === 'sftp'
-        ? new SFTP({ host, port, username, password, privateKey })
-        : new FTP({ host, port, user: username, password, secure })
-      await client.connect()
-      await upload(client, uploadFiles)
-      console.log('')
-      client.end()
+      if (!onlyCompress) {
+        let client = type === 'sftp'
+          ? new SFTP({ host, port, username, password, privateKey })
+          : new FTP({ host, port, user: username, password, secure })
+        await client.connect()
+        await upload(client, uploadFiles)
+        console.log('')
+        client.end()
+      }
     }
     // 上传后远端脚本
-    if (RemoteCommand.length > 0 && type === 'sftp') {
+    if (!onlyCompress && RemoteCommand.length > 0 && type === 'sftp') {
       await new SSH({ host, port, username, password, privateKey }).exec(RemoteCommand.join(' && '))
       console.log('Command execution completed.\n')
-      if (fs.existsSync(zipfile)) {
-        fs.unlinkSync(zipfile)
-      }
+    }
+    if (!onlyCompress && fs.existsSync(zipfile)) {
+      fs.unlinkSync(zipfile)
     }
   } catch (error) {
     console.error(error.message)

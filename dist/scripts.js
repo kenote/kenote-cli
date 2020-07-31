@@ -61,19 +61,29 @@ var runscript = require("runscript");
 var path = require("path");
 var ts_optchain_1 = require("ts-optchain");
 var utils_1 = require("./utils");
-exports.default = (function (name, tag) { return __awaiter(void 0, void 0, void 0, function () {
-    var pkg, project, scripts, scriptTagname_1, options, isScript, error_1;
+exports.default = (function (name, tag, makefile) { return __awaiter(void 0, void 0, void 0, function () {
+    var scripts, pkg, project, scriptTagname_1, options, isScript, scriptFilename, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                pkg = utils_1.readPackageJson(name);
-                if (!ts_optchain_1.oc(pkg).scripts()) {
-                    console.log('No script command found, please check your package.json file.');
-                    process.exit(0);
+                scripts = [];
+                if (makefile) {
+                    scripts = utils_1.readMakefileScripts(name);
+                    if (scripts.length === 0) {
+                        console.log('No script command found, please check your Makefile.');
+                        process.exit(0);
+                    }
+                }
+                else {
+                    pkg = utils_1.readPackageJson(name);
+                    if (!ts_optchain_1.oc(pkg).scripts()) {
+                        console.log('No script command found, please check your package.json file.');
+                        process.exit(0);
+                    }
+                    scripts = Object.keys(ts_optchain_1.oc(pkg).scripts({}));
                 }
                 project = utils_1.getProject(name);
                 console.log('> Where project on', project.target);
-                scripts = Object.keys(ts_optchain_1.oc(pkg).scripts({}));
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 5, , 6]);
@@ -94,7 +104,8 @@ exports.default = (function (name, tag) { return __awaiter(void 0, void 0, void 
             case 3:
                 isScript = scripts.find(function (o) { return o === scriptTagname_1; });
                 if (!isScript) {
-                    console.log('No script command found, please check your package.json file.');
+                    scriptFilename = makefile ? 'Makefile' : 'package.json file';
+                    console.log("No script command found, please check your " + scriptFilename + ".");
                     process.exit(0);
                 }
                 return [4, runscript("npm run " + scriptTagname_1, { cwd: path.resolve(utils_1.__ROOTPATH, name !== null && name !== void 0 ? name : '') })];

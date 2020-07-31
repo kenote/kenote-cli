@@ -69,25 +69,30 @@ var sftp_1 = require("./utils/sftp");
 var ssh_1 = require("./utils/ssh");
 var utils_1 = require("./utils");
 var zip_1 = require("./utils/zip");
-exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, function () {
-    var projects, project, selector_1, _a, rootDir, ignore, rules, type, connect, deployTo, beforeScripts, remoteCommand, unzip, workspace, _b, host, port, username, password, privateKey, secure, RemoteCommand, zipfileName, zipfile, globOptions, files, uploadFiles, client, error_1;
+exports.default = (function (name, options) { return __awaiter(void 0, void 0, void 0, function () {
+    var zipfileName, zipfile, onlyCompress, nodeModules, projects, project, selector_1, _a, rootDir, ignore, rules, type, connect, deployTo, beforeScripts, remoteCommand, unzip, workspace, _b, host, port, username, password, privateKey, secure, RemoteCommand, globOptions, files, uploadFiles, append, client, error_1;
     var _c;
     return __generator(this, function (_d) {
         switch (_d.label) {
             case 0:
-                _d.trys.push([0, 15, , 16]);
-                return [4, getConfigFile(name)];
+                zipfileName = dayjs().format('YYYY-MM-DDTHHmmss') + '.tar.gz';
+                zipfile = path.resolve(utils_1.__ROOTPATH, zipfileName);
+                onlyCompress = options.onlyCompress, nodeModules = options.nodeModules;
+                _d.label = 1;
             case 1:
+                _d.trys.push([1, 16, , 17]);
+                return [4, getConfigFile(name)];
+            case 2:
                 projects = (_d.sent()).projects;
                 if ((projects === null || projects === void 0 ? void 0 : projects.length) === 0) {
                     console.log('Please configure a project first.');
                     process.exit(0);
                 }
                 project = void 0;
-                if (!(projects.length === 1)) return [3, 2];
+                if (!(projects.length === 1)) return [3, 3];
                 project = projects[0];
-                return [3, 4];
-            case 2: return [4, inquirer.prompt([
+                return [3, 5];
+            case 3: return [4, inquirer.prompt([
                     {
                         type: 'list',
                         name: 'project',
@@ -95,34 +100,36 @@ exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, fu
                         choices: __spread(projects)
                     }
                 ])];
-            case 3:
+            case 4:
                 selector_1 = _d.sent();
                 project = (_c = projects === null || projects === void 0 ? void 0 : projects.find(function (o) { return o.value === selector_1.project; })) !== null && _c !== void 0 ? _c : projects[0];
-                _d.label = 4;
-            case 4:
+                _d.label = 5;
+            case 5:
                 _a = parseProject(project), rootDir = _a.rootDir, ignore = _a.ignore, rules = _a.rules, type = _a.type, connect = _a.connect, deployTo = _a.deployTo, beforeScripts = _a.beforeScripts, remoteCommand = _a.remoteCommand, unzip = _a.unzip;
                 workspace = path.resolve(utils_1.__ROOTPATH, rootDir);
-                if (!(beforeScripts && beforeScripts.length > 0)) return [3, 6];
+                if (!(beforeScripts && beforeScripts.length > 0)) return [3, 7];
                 console.log('Start running pre-script ...\n');
                 return [4, runscript(beforeScripts.join(' && '))];
-            case 5:
-                _d.sent();
-                _d.label = 6;
             case 6:
+                _d.sent();
+                _d.label = 7;
+            case 7:
                 _b = connect, host = _b.host, port = _b.port, username = _b.username, password = _b.password, privateKey = _b.privateKey, secure = _b.secure;
                 RemoteCommand = [];
-                zipfileName = dayjs().format('YYYY-MM-DDTHHmmss') + '.tar.gz';
-                zipfile = path.resolve(utils_1.__ROOTPATH, zipfileName);
-                if (!connect) return [3, 12];
+                if (!connect) return [3, 13];
                 globOptions = { cwd: workspace, nodir: true, realpath: true, ignore: ignore };
                 return [4, pickFils(['.**/**', '**'], globOptions)];
-            case 7:
+            case 8:
                 files = _d.sent();
                 uploadFiles = processFiles(files, { workspace: workspace, deployTo: deployTo, rules: rules });
-                if (!(unzip && type === 'sftp')) return [3, 9];
+                if (!(unzip && type === 'sftp')) return [3, 10];
                 console.log('\nStarting compressing folders ...');
-                return [4, zip_1.zip(zipfile, ['.**/**', '**'], globOptions)];
-            case 8:
+                append = [];
+                if (nodeModules) {
+                    append.push(['node_modules/', 'node_modules']);
+                }
+                return [4, zip_1.zip(zipfile, ['.**/**', '**'], globOptions, append)];
+            case 9:
                 _d.sent();
                 uploadFiles = [{
                         filename: "/" + zipfileName,
@@ -130,36 +137,38 @@ exports.default = (function (name) { return __awaiter(void 0, void 0, void 0, fu
                         dest: path.resolve(deployTo, zipfileName)
                     }];
                 RemoteCommand = ["cd " + deployTo, "tar -zxvf " + zipfileName, "rm -rf " + zipfileName].concat(remoteCommand !== null && remoteCommand !== void 0 ? remoteCommand : []);
-                _d.label = 9;
-            case 9:
+                _d.label = 10;
+            case 10:
+                if (!!onlyCompress) return [3, 13];
                 client = type === 'sftp'
                     ? new sftp_1.default({ host: host, port: port, username: username, password: password, privateKey: privateKey })
                     : new ftp_1.default({ host: host, port: port, user: username, password: password, secure: secure });
                 return [4, client.connect()];
-            case 10:
+            case 11:
                 _d.sent();
                 return [4, upload(client, uploadFiles)];
-            case 11:
+            case 12:
                 _d.sent();
                 console.log('');
                 client.end();
-                _d.label = 12;
-            case 12:
-                if (!(RemoteCommand.length > 0 && type === 'sftp')) return [3, 14];
-                return [4, new ssh_1.default({ host: host, port: port, username: username, password: password, privateKey: privateKey }).exec(RemoteCommand.join(' && '))];
+                _d.label = 13;
             case 13:
+                if (!(!onlyCompress && RemoteCommand.length > 0 && type === 'sftp')) return [3, 15];
+                return [4, new ssh_1.default({ host: host, port: port, username: username, password: password, privateKey: privateKey }).exec(RemoteCommand.join(' && '))];
+            case 14:
                 _d.sent();
                 console.log('Command execution completed.\n');
-                if (fs.existsSync(zipfile)) {
+                _d.label = 15;
+            case 15:
+                if (!onlyCompress && fs.existsSync(zipfile)) {
                     fs.unlinkSync(zipfile);
                 }
-                _d.label = 14;
-            case 14: return [3, 16];
-            case 15:
+                return [3, 17];
+            case 16:
                 error_1 = _d.sent();
                 console.error(error_1.message);
-                return [3, 16];
-            case 16: return [2];
+                return [3, 17];
+            case 17: return [2];
         }
     });
 }); });

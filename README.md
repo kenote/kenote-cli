@@ -6,6 +6,10 @@ A personal command line tool.
 [![NPM Downloads][downloads-image]][downloads-url]
 [![Gratipay][licensed-image]][licensed-url]
 
+## Engines
+
+node >= 10.x.x
+
 ## Install
 
 ```bash
@@ -29,7 +33,7 @@ Commands:
   config                get or set your configuration.
   script|run            run npm scripts of project.
   serve|http [options]  simple http service.
-  deploy                Deploy your service to the server.
+  deploy [options]      Deploy your service to the server.
 ```
 
 ## License

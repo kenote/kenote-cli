@@ -58,7 +58,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.installPackage = exports.readPackageJson = exports.downloadRepo = exports.getAuthor = exports.installConfigFile = exports.isConfigFile = exports.loadConfig = exports.getConfig = exports.getProject = exports.__CLI_DIR = exports.__CONFIGFILE = exports.__KENOTE = exports.__ROOTPATH = exports.__HOMEPATH = void 0;
+exports.getArgs = exports.installPackage = exports.readMakefileScripts = exports.readPackageJson = exports.downloadRepo = exports.getAuthor = exports.installConfigFile = exports.isConfigFile = exports.loadConfig = exports.getConfig = exports.getProject = exports.__CLI_DIR = exports.__CONFIGFILE = exports.__KENOTE = exports.__ROOTPATH = exports.__HOMEPATH = void 0;
 var path = require("path");
 var yaml = require("js-yaml");
 var fs = require("fs-extra");
@@ -228,10 +228,20 @@ function readPackageJson(target) {
     return loadConfig(packageFile);
 }
 exports.readPackageJson = readPackageJson;
+function readMakefileScripts(target) {
+    if (!target) {
+        target = exports.__ROOTPATH;
+    }
+    var makeFile = path.resolve(target, 'Makefile');
+    var makefileString = fs.readFileSync(makeFile, 'utf-8');
+    var commandMatch = makefileString.match(/\n([a-zA-Z]{0,20})\:/g);
+    return commandMatch.map(function (o) { return o.replace(/(\n|\:)/g, ''); });
+}
+exports.readMakefileScripts = readMakefileScripts;
 function installPackage(target, installer, results) {
     if (installer === void 0) { installer = 'npm'; }
     return __awaiter(this, void 0, void 0, function () {
-        var spinner, results_1, results_1_1, result, dir, _a, _b, line, error_3, message;
+        var spinner, results_1, results_1_1, result_1, dir, _a, _b, line, error_3, message;
         var e_1, _c, e_2, _d;
         return __generator(this, function (_e) {
             switch (_e.label) {
@@ -249,14 +259,14 @@ function installPackage(target, installer, results) {
                     if (results) {
                         try {
                             for (results_1 = __values(results), results_1_1 = results_1.next(); !results_1_1.done; results_1_1 = results_1.next()) {
-                                result = results_1_1.value;
-                                console.log('\n ', chalk.bold(result.name + ":"), '\n');
+                                result_1 = results_1_1.value;
+                                console.log('\n ', chalk.bold(result_1.name + ":"), '\n');
                                 if (exports.__ROOTPATH !== target) {
                                     dir = exports.__ROOTPATH === path.dirname(target) ? path.basename(target) : target;
                                     console.log('   ', chalk.blue('cd'), dir);
                                 }
                                 try {
-                                    for (_a = (e_2 = void 0, __values(result.content)), _b = _a.next(); !_b.done; _b = _a.next()) {
+                                    for (_a = (e_2 = void 0, __values(result_1.content)), _b = _a.next(); !_b.done; _b = _a.next()) {
                                         line = _b.value;
                                         console.log('   ', line);
                                     }
@@ -292,3 +302,36 @@ function installPackage(target, installer, results) {
     });
 }
 exports.installPackage = installPackage;
+function getArgs(commands, args) {
+    var e_3, _a, e_4, _b;
+    var __args = {};
+    try {
+        for (var commands_1 = __values(commands), commands_1_1 = commands_1.next(); !commands_1_1.done; commands_1_1 = commands_1.next()) {
+            var command = commands_1_1.value;
+            try {
+                for (var args_1 = (e_4 = void 0, __values(args)), args_1_1 = args_1.next(); !args_1_1.done; args_1_1 = args_1.next()) {
+                    var arg = args_1_1.value;
+                    if (!__args[arg]) {
+                        __args[arg] = lodash_1.result(command, arg);
+                    }
+                }
+            }
+            catch (e_4_1) { e_4 = { error: e_4_1 }; }
+            finally {
+                try {
+                    if (args_1_1 && !args_1_1.done && (_b = args_1.return)) _b.call(args_1);
+                }
+                finally { if (e_4) throw e_4.error; }
+            }
+        }
+    }
+    catch (e_3_1) { e_3 = { error: e_3_1 }; }
+    finally {
+        try {
+            if (commands_1_1 && !commands_1_1.done && (_a = commands_1.return)) _a.call(commands_1);
+        }
+        finally { if (e_3) throw e_3.error; }
+    }
+    return __args;
+}
+exports.getArgs = getArgs;

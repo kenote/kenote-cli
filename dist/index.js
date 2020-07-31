@@ -61,6 +61,7 @@ var scripts_1 = require("./scripts");
 var config_1 = require("./config");
 var serve_1 = require("./serve");
 var deploy_1 = require("./deploy");
+var utils_1 = require("./utils");
 var pkg = require('../package.json');
 var basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'));
 program.version(pkg.version);
@@ -98,10 +99,12 @@ program
     .alias('run')
     .usage('[path] [options]')
     .option('-t --tag <tag-name>', 'choose a script tag.')
+    .option('--makefile', 'use Makefile.')
     .description('run npm scripts of project.')
     .action(function () {
     var _a = __read(program.args, 1), name = _a[0];
-    scripts_1.default(name, program.tag);
+    var makefile = utils_1.getArgs(program.commands, ['makefile']).makefile;
+    scripts_1.default(name, program.tag, makefile);
 });
 program
     .command('serve')
@@ -115,10 +118,14 @@ program
 });
 program
     .command('deploy')
+    .usage('[path] [options]')
+    .option('--only-compress', 'only compress.')
+    .option('--node-modules', 'contains the node_modules directory.')
     .description('Deploy your service to the server.')
     .action(function () {
     var _a = __read(program.args, 1), name = _a[0];
-    deploy_1.default(name);
+    var _b = utils_1.getArgs(program.commands, ['onlyCompress', 'nodeModules']), onlyCompress = _b.onlyCompress, nodeModules = _b.nodeModules;
+    deploy_1.default(name, { onlyCompress: onlyCompress, nodeModules: nodeModules });
 });
 if (lodash_1.isEmpty(program.parse(process.argv).alias) && process.argv.length === 2) {
     program.help();

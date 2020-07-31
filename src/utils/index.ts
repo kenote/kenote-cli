@@ -6,7 +6,7 @@ import { Configuration, Project } from '../../types'
 import * as downloaditRepo from 'download-git-repo'
 import * as os from 'os'
 import * as ora from 'ora'
-import { unset } from 'lodash'
+import { unset, result } from 'lodash'
 import * as ini from 'ini'
 import * as runscript from 'runscript'
 import * as chalk from 'chalk'
@@ -171,6 +171,19 @@ export function readPackageJson (target?: string): Record<string, any> | undefin
 }
 
 /**
+ * 读取 Makefile 脚本
+ */
+export function readMakefileScripts (target?: string): string[] {
+  if (!target) {
+    target = __ROOTPATH
+  }
+  let makeFile: string = path.resolve(target, 'Makefile')
+  let makefileString = fs.readFileSync(makeFile, 'utf-8')
+  let commandMatch = makefileString.match(/\n([a-zA-Z]{0,20})\:/g) as string[]
+  return commandMatch.map( o => o.replace(/(\n|\:)/g, ''))
+}
+
+/**
  * 安装所需包
  * @param target string
  * @param installer 'npm' |'yarn'
@@ -200,4 +213,22 @@ export async function installPackage (target: string, installer: string = 'npm',
     spinner.stop()
     spinner.fail(message)
   }
+}
+
+/**
+ * 获取命令行参数
+ * @param commands Array<Record<string, any>>  program.commands
+ * @param args string[]  需要获取的参数名
+ */
+
+export function getArgs (commands: Array<Record<string, any>>, args: string[]): Record<string, any> {
+  let __args: Record<string, any> = {}
+  for (let command of commands) {
+    for (let arg of args) {
+      if (!__args[arg]) {
+        __args[arg] = result(command, arg)
+      }
+    }
+  }
+  return __args
 }

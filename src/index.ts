@@ -7,6 +7,7 @@ import scripts from './scripts'
 import config from './config'
 import serve from './serve'
 import deploy from './deploy'
+import { getArgs } from './utils'
 
 const pkg = require('../package.json')
 const basename = path.basename(process.env._ || process.title.replace(/^(\S+)(\s\-\s)(\S+)$/, '$3'))
@@ -51,10 +52,12 @@ program
   .alias('run')
   .usage('[path] [options]')
   .option('-t --tag <tag-name>', 'choose a script tag.')
+  .option('--makefile', 'use Makefile.')
   .description('run npm scripts of project.')
   .action( () => {
     let [ name ] = program.args
-    scripts(name, program.tag)
+    let { makefile } = getArgs(program.commands, ['makefile'])
+    scripts(name, program.tag, makefile)
   })
 
 /**
@@ -76,10 +79,14 @@ program
  */
 program
   .command('deploy')
+  .usage('[path] [options]')
+  .option('--only-compress', 'only compress.')
+  .option('--node-modules', 'contains the node_modules directory.')
   .description('Deploy your service to the server.')
   .action( () => {
     let [ name ] = program.args
-    deploy(name)
+    let { onlyCompress, nodeModules } = getArgs(program.commands, ['onlyCompress', 'nodeModules'])
+    deploy(name, { onlyCompress, nodeModules })
   })
 
 // Parse and fallback to help if no args
