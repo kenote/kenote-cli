@@ -43,7 +43,8 @@ export default async (name: string, tag?: string, makefile?: boolean): Promise<v
       console.log(`No script command found, please check your ${scriptFilename}.`)
       process.exit(0)
     }
-    await runscript(`npm run ${scriptTagname}`, { cwd: path.resolve(__ROOTPATH, name??'' ) })
+    let command = makefile ? `make ${scriptTagname}` : `npm run ${scriptTagname}`
+    await runscript(command, { cwd: path.resolve(__ROOTPATH, name??'' ) })
   } catch (error) {
     console.error(error.message)
   }

@@ -62,7 +62,7 @@ var path = require("path");
 var ts_optchain_1 = require("ts-optchain");
 var utils_1 = require("./utils");
 exports.default = (function (name, tag, makefile) { return __awaiter(void 0, void 0, void 0, function () {
-    var scripts, pkg, project, scriptTagname_1, options, isScript, scriptFilename, error_1;
+    var scripts, pkg, project, scriptTagname_1, options, isScript, scriptFilename, command, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -108,7 +108,8 @@ exports.default = (function (name, tag, makefile) { return __awaiter(void 0, voi
                     console.log("No script command found, please check your " + scriptFilename + ".");
                     process.exit(0);
                 }
-                return [4, runscript("npm run " + scriptTagname_1, { cwd: path.resolve(utils_1.__ROOTPATH, name !== null && name !== void 0 ? name : '') })];
+                command = makefile ? "make " + scriptTagname_1 : "npm run " + scriptTagname_1;
+                return [4, runscript(command, { cwd: path.resolve(utils_1.__ROOTPATH, name !== null && name !== void 0 ? name : '') })];
             case 4:
                 _a.sent();
                 return [3, 6];
