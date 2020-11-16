@@ -1,5 +1,5 @@
 import * as inquirer from 'inquirer'
-import { getProject, getConfig, getAuthor, downloadRepo, installPackage } from './utils'
+import { getProject, getConfig, getAuthor, downloadRepo, installPackage, toRepository } from './utils'
 import { } from 'lodash'
 import { oc } from 'ts-optchain'
 import { Project } from '../types'
@@ -8,9 +8,9 @@ import { Project } from '../types'
  * 创建一个项目
  * @param name string
  */
-export const createApp = async (name?: string) => {
+export const createApp = async (name?: string, repository?: string) => {
   try {
-    let project: Project.Install = await initProject(name)
+    let project: Project.Install = await initProject(name, repository)
     await installExample(project)
   } catch (error) {
     console.log(error.message)
@@ -21,7 +21,7 @@ export const createApp = async (name?: string) => {
  * 初始化项目
  * @param name string
  */
-async function initProject (name?: string): Promise<Project.Install> {
+async function initProject (name?: string, repository?: string): Promise<Project.Install> {
   let project = getProject(name)
   if (project.exists) {
     let actions = await inquirer.prompt([
@@ -41,7 +41,7 @@ async function initProject (name?: string): Promise<Project.Install> {
   if (oc(examples)([]).length === 0) {
     throw new Error('Did not find any examples')
   }
-  let options = await inquirer.prompt([
+  let questions: inquirer.QuestionCollection[] = [
     {
       type: 'input',
       name: 'name',
@@ -53,12 +53,6 @@ async function initProject (name?: string): Promise<Project.Install> {
       name: 'description',
       message: 'Project description',
       default: 'Your Project\'s description.'
-    },
-    {
-      type: 'list',
-      name: 'example',
-      message: 'Choose a custom example',
-      choices: [ ...examples ]
     },
     {
       type: 'input',
@@ -73,14 +67,32 @@ async function initProject (name?: string): Promise<Project.Install> {
       choices: [ 'npm', 'yarn' ],
       default: 'npm'
     }
-  ])
-  let example = examples?.find( o => o.value === options.example )
-  return { 
+  ]
+  if (!repository) {
+    questions.splice(2, 0, {
+      type: 'list',
+      name: 'example',
+      message: 'Choose a custom example',
+      choices: [ ...examples ]
+    })
+  }
+  let options = await inquirer.prompt(questions)
+  let basicOptions: Project.Install = {
     name        : options.name,
     description : options.description,
     author      : options.author,
     installer   : options.installer,
-    target      : project.target, 
+    target      : project.target
+  }
+  if (repository) {
+    return {
+      ...basicOptions,
+      repository: toRepository(repository)
+    }
+  }
+  let example = examples?.find( o => o.value === options.example )
+  return { 
+    ...basicOptions,
     repository  : example?.repository,
     results     : example?.results
   }

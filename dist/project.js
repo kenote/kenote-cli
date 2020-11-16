@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -60,13 +71,13 @@ exports.createApp = void 0;
 var inquirer = require("inquirer");
 var utils_1 = require("./utils");
 var ts_optchain_1 = require("ts-optchain");
-exports.createApp = function (name) { return __awaiter(void 0, void 0, void 0, function () {
+exports.createApp = function (name, repository) { return __awaiter(void 0, void 0, void 0, function () {
     var project, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 3, , 4]);
-                return [4, initProject(name)];
+                return [4, initProject(name, repository)];
             case 1:
                 project = _a.sent();
                 return [4, installExample(project)];
@@ -81,9 +92,9 @@ exports.createApp = function (name) { return __awaiter(void 0, void 0, void 0, f
         }
     });
 }); };
-function initProject(name) {
+function initProject(name, repository) {
     return __awaiter(this, void 0, void 0, function () {
-        var project, actions, examples, options, example;
+        var project, actions, examples, questions, options, basicOptions, example;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -109,51 +120,56 @@ function initProject(name) {
                     if (ts_optchain_1.oc(examples)([]).length === 0) {
                         throw new Error('Did not find any examples');
                     }
-                    return [4, inquirer.prompt([
-                            {
-                                type: 'input',
-                                name: 'name',
-                                message: 'Project name',
-                                default: project.name
-                            },
-                            {
-                                type: 'input',
-                                name: 'description',
-                                message: 'Project description',
-                                default: 'Your Project\'s description.'
-                            },
-                            {
-                                type: 'list',
-                                name: 'example',
-                                message: 'Choose a custom example',
-                                choices: __spread(examples)
-                            },
-                            {
-                                type: 'input',
-                                name: 'author',
-                                message: 'Author name',
-                                default: utils_1.getAuthor()
-                            },
-                            {
-                                type: 'list',
-                                name: 'installer',
-                                message: 'Choose a package manager',
-                                choices: ['npm', 'yarn'],
-                                default: 'npm'
-                            }
-                        ])];
+                    questions = [
+                        {
+                            type: 'input',
+                            name: 'name',
+                            message: 'Project name',
+                            default: project.name
+                        },
+                        {
+                            type: 'input',
+                            name: 'description',
+                            message: 'Project description',
+                            default: 'Your Project\'s description.'
+                        },
+                        {
+                            type: 'input',
+                            name: 'author',
+                            message: 'Author name',
+                            default: utils_1.getAuthor()
+                        },
+                        {
+                            type: 'list',
+                            name: 'installer',
+                            message: 'Choose a package manager',
+                            choices: ['npm', 'yarn'],
+                            default: 'npm'
+                        }
+                    ];
+                    if (!repository) {
+                        questions.splice(2, 0, {
+                            type: 'list',
+                            name: 'example',
+                            message: 'Choose a custom example',
+                            choices: __spread(examples)
+                        });
+                    }
+                    return [4, inquirer.prompt(questions)];
                 case 3:
                     options = _a.sent();
+                    basicOptions = {
+                        name: options.name,
+                        description: options.description,
+                        author: options.author,
+                        installer: options.installer,
+                        target: project.target
+                    };
+                    if (repository) {
+                        return [2, __assign(__assign({}, basicOptions), { repository: utils_1.toRepository(repository) })];
+                    }
                     example = examples === null || examples === void 0 ? void 0 : examples.find(function (o) { return o.value === options.example; });
-                    return [2, {
-                            name: options.name,
-                            description: options.description,
-                            author: options.author,
-                            installer: options.installer,
-                            target: project.target,
-                            repository: example === null || example === void 0 ? void 0 : example.repository,
-                            results: example === null || example === void 0 ? void 0 : example.results
-                        }];
+                    return [2, __assign(__assign({}, basicOptions), { repository: example === null || example === void 0 ? void 0 : example.repository, results: example === null || example === void 0 ? void 0 : example.results })];
             }
         });
     });

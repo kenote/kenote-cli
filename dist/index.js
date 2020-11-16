@@ -69,16 +69,18 @@ program
     .name(/^(node|backpack)$/.test(basename) ? 'kenote' : basename)
     .usage('[command] [options]')
     .option('-p --port <port>', 'set http server port')
-    .option('-t --tag <tag-name>', 'choose a script tag.');
+    .option('-t --tag <tag-name>', 'choose a script tag.')
+    .option('-e --example <example-url>', 'use a git repository url');
 program
     .command('create')
-    .usage('<app-name>')
+    .usage('<app-name> [options]')
+    .option('-e --example <example-url>', 'use a git repository url')
     .description('create a new project.')
     .action(function () { return __awaiter(void 0, void 0, void 0, function () {
     var _a, name;
     return __generator(this, function (_b) {
         _a = __read(program.args, 1), name = _a[0];
-        project_1.createApp(name);
+        project_1.createApp(name, program.example);
         return [2];
     });
 }); });

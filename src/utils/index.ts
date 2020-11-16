@@ -10,6 +10,8 @@ import { unset, result } from 'lodash'
 import * as ini from 'ini'
 import * as runscript from 'runscript'
 import * as chalk from 'chalk'
+import { dclone } from 'dclone'
+import * as urlParseLax from 'url-parse-lax'
 
 export const __HOMEPATH: string = os.homedir()
 export const __ROOTPATH: string = process.cwd()
@@ -122,12 +124,21 @@ export async function downloadRepo (repo: string, target: string, options: Proje
   let spinner = ora('Downloading repo ...').start()
   try {
     await fs.remove(target)
-    await new Promise((resolve, reject) => {
-      downloaditRepo(repo, target, err => {
-        if (err) return reject(err)
-        resolve()
+    if (/^(http?s)/.test(repo)) {
+      await dclone({ dir: repo })
+      let dist = path.resolve(__ROOTPATH, getDist(repo))
+      fs.renameSync(dist, target)
+      let distRoot = path.resolve(__ROOTPATH, getDist(repo).split('/')[0])
+      fs.remove(distRoot)
+    }
+    else {
+      await new Promise((resolve, reject) => {
+        downloaditRepo(repo, target, err => {
+          if (err) return reject(err)
+          resolve()
+        })
       })
-    })
+    }
     spinner.stop()
     spinner.succeed('Downloading repo complete.')
     refreshPackageJson(options, target)
@@ -139,6 +150,42 @@ export async function downloadRepo (repo: string, target: string, options: Proje
     spinner.stop()
     spinner.fail(message)
   }
+}
+
+/**
+ * 从URL路径获取目标目录
+ * @param url string 
+ */
+function getDist (url: string): string {
+  let [, distDir] = url.split('tree')
+  let [, , ...distArr] = distDir.split('/')
+  return distArr.join('/')
+}
+
+/**
+ * 将URL转换为仓库地址
+ * @param url string
+ */
+export function toRepository (url: string): string {
+  let { host, pathname } = urlParseLax(url)
+  let [ , owner, name, tree, branche, ...dist ] = pathname.split('/')
+  let repo = ''
+  if (/(github|gitlab|bitbucket)/.test(host)) {
+    if (dist.length > 0) {
+      repo = url
+    }
+    else {
+      let direct = host.match(/(github|gitlab|bitbucket)/)[0]
+      repo = `${direct}:${owner}/${name}`
+      if (tree === 'tree') {
+        repo += `#${branche}`
+      }
+    }
+  }
+  else {
+    repo = `direct:${url}`
+  }
+  return repo
 }
 
 /**

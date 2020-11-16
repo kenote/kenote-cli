@@ -19,17 +19,19 @@ program
   .usage('[command] [options]')
   .option('-p --port <port>', 'set http server port')
   .option('-t --tag <tag-name>', 'choose a script tag.')
+  .option('-e --example <example-url>', 'use a git repository url')
 
 /**
  * 创建一个项目
  */
 program
   .command('create')
-  .usage('<app-name>')
+  .usage('<app-name> [options]')
+  .option('-e --example <example-url>', 'use a git repository url')
   .description('create a new project.')
   .action( async () => {
     let [ name ] = program.args
-    createApp(name)
+    createApp(name, program.example)
   })
 
 /**

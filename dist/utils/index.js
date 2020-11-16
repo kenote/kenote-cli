@@ -46,6 +46,22 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __read = (this && this.__read) || function (o, n) {
+    var m = typeof Symbol === "function" && o[Symbol.iterator];
+    if (!m) return o;
+    var i = m.call(o), r, ar = [], e;
+    try {
+        while ((n === void 0 || n-- > 0) && !(r = i.next()).done) ar.push(r.value);
+    }
+    catch (error) { e = { error: error }; }
+    finally {
+        try {
+            if (r && !r.done && (m = i["return"])) m.call(i);
+        }
+        finally { if (e) throw e.error; }
+    }
+    return ar;
+};
 var __values = (this && this.__values) || function(o) {
     var s = typeof Symbol === "function" && Symbol.iterator, m = s && o[s], i = 0;
     if (m) return m.call(o);
@@ -58,7 +74,7 @@ var __values = (this && this.__values) || function(o) {
     throw new TypeError(s ? "Object is not iterable." : "Symbol.iterator is not defined.");
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getArgs = exports.installPackage = exports.readMakefileScripts = exports.readPackageJson = exports.downloadRepo = exports.getAuthor = exports.installConfigFile = exports.isConfigFile = exports.loadConfig = exports.getConfig = exports.getProject = exports.__CLI_DIR = exports.__CONFIGFILE = exports.__KENOTE = exports.__ROOTPATH = exports.__HOMEPATH = void 0;
+exports.getArgs = exports.installPackage = exports.readMakefileScripts = exports.readPackageJson = exports.toRepository = exports.downloadRepo = exports.getAuthor = exports.installConfigFile = exports.isConfigFile = exports.loadConfig = exports.getConfig = exports.getProject = exports.__CLI_DIR = exports.__CONFIGFILE = exports.__KENOTE = exports.__ROOTPATH = exports.__HOMEPATH = void 0;
 var path = require("path");
 var yaml = require("js-yaml");
 var fs = require("fs-extra");
@@ -70,6 +86,8 @@ var lodash_1 = require("lodash");
 var ini = require("ini");
 var runscript = require("runscript");
 var chalk = require("chalk");
+var dclone_1 = require("dclone");
+var urlParseLax = require("url-parse-lax");
 exports.__HOMEPATH = os.homedir();
 exports.__ROOTPATH = process.cwd();
 exports.__KENOTE = path.resolve(exports.__HOMEPATH, '.kenote');
@@ -171,31 +189,42 @@ function getAuthor() {
 exports.getAuthor = getAuthor;
 function downloadRepo(repo, target, options) {
     return __awaiter(this, void 0, void 0, function () {
-        var spinner, error_2, message;
+        var spinner, dist, distRoot, error_2, message;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     spinner = ora('Downloading repo ...').start();
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 4, , 5]);
+                    _a.trys.push([1, 7, , 8]);
                     return [4, fs.remove(target)];
                 case 2:
                     _a.sent();
-                    return [4, new Promise(function (resolve, reject) {
-                            downloaditRepo(repo, target, function (err) {
-                                if (err)
-                                    return reject(err);
-                                resolve();
-                            });
-                        })];
+                    if (!/^(http?s)/.test(repo)) return [3, 4];
+                    return [4, dclone_1.dclone({ dir: repo })];
                 case 3:
                     _a.sent();
+                    dist = path.resolve(exports.__ROOTPATH, getDist(repo));
+                    fs.renameSync(dist, target);
+                    distRoot = path.resolve(exports.__ROOTPATH, getDist(repo).split('/')[0]);
+                    fs.remove(distRoot);
+                    return [3, 6];
+                case 4: return [4, new Promise(function (resolve, reject) {
+                        downloaditRepo(repo, target, function (err) {
+                            if (err)
+                                return reject(err);
+                            resolve();
+                        });
+                    })];
+                case 5:
+                    _a.sent();
+                    _a.label = 6;
+                case 6:
                     spinner.stop();
                     spinner.succeed('Downloading repo complete.');
                     refreshPackageJson(options, target);
-                    return [3, 5];
-                case 4:
+                    return [3, 8];
+                case 7:
                     error_2 = _a.sent();
                     message = error_2.message;
                     if (error_2.host && error_2.path) {
@@ -203,13 +232,40 @@ function downloadRepo(repo, target, options) {
                     }
                     spinner.stop();
                     spinner.fail(message);
-                    return [3, 5];
-                case 5: return [2];
+                    return [3, 8];
+                case 8: return [2];
             }
         });
     });
 }
 exports.downloadRepo = downloadRepo;
+function getDist(url) {
+    var _a = __read(url.split('tree'), 2), distDir = _a[1];
+    var _b = __read(distDir.split('/')), distArr = _b.slice(2);
+    return distArr.join('/');
+}
+function toRepository(url) {
+    var _a = urlParseLax(url), host = _a.host, pathname = _a.pathname;
+    var _b = __read(pathname.split('/')), owner = _b[1], name = _b[2], tree = _b[3], branche = _b[4], dist = _b.slice(5);
+    var repo = '';
+    if (/(github|gitlab|bitbucket)/.test(host)) {
+        if (dist.length > 0) {
+            repo = url;
+        }
+        else {
+            var direct = host.match(/(github|gitlab|bitbucket)/)[0];
+            repo = direct + ":" + owner + "/" + name;
+            if (tree === 'tree') {
+                repo += "#" + branche;
+            }
+        }
+    }
+    else {
+        repo = "direct:" + url;
+    }
+    return repo;
+}
+exports.toRepository = toRepository;
 function refreshPackageJson(options, target) {
     var packageFile = path.resolve(target, 'package.json');
     var pkg = fs.readJsonSync(packageFile, { encoding: 'utf-8' });
