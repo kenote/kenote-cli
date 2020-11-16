@@ -8,7 +8,7 @@ A personal command line tool.
 
 ## Engines
 
-node >= 10.x.x
+node >= 8.x.x
 
 ## Install
 
@@ -23,17 +23,18 @@ $ kenote -h
 Usage: kenote [command] [options]
 
 Options:
-  -V, --version         output the version number
-  -p --port <port>      set http server port
-  -t --tag <tag-name>   choose a script tag.
-  -h, --help            output usage information
+  -V, --version               output the version number
+  -p --port <port>            set http server port
+  -t --tag <tag-name>         choose a script tag.
+  -e --example <example-url>  use a git repository url
+  -h, --help                  output usage information
 
 Commands:
-  create                create a new project.
-  config                get or set your configuration.
-  script|run            run npm scripts of project.
-  serve|http [options]  simple http service.
-  deploy [options]      Deploy your service to the server.
+  create [options]            create a new project.
+  config                      get or set your configuration.
+  script|run [options]        run npm scripts of project.
+  serve|http [options]        simple http service.
+  deploy [options]            Deploy your service to the server.
 ```
 
 ## License
